@@ -27,7 +27,7 @@ from fno_universe import load_fno_universe
 from upstox_downloads import download_full_quotes, BATCH_SIZE
 from delta_zone_scanner import run_scan as run_delta_zone_scan
 from rvol_atr_baseline import load_baseline
-from paper_trader import PaperTradeState, manage_exits, find_new_entries
+from paper_trader import PaperTradeState, manage_exits, run_first_candle_entries
 
 IST = ZoneInfo("Asia/Kolkata")
 
@@ -214,7 +214,7 @@ def poll_loop(state: ScannerState, universe: dict, access_token: str, stop_event
             # entries are bounded (top RVOL candidates only, capped count) ----
             now_ist = datetime.datetime.now(IST)
             manage_exits(pt_state, equity_by_token, universe, now_ist)
-            find_new_entries(pt_state, df, universe, access_token, now_ist)
+            run_first_candle_entries(pt_state, universe, access_token, now_ist)
 
         except Exception as e:
             # Keep the last good dataframe visible on screen rather than
@@ -345,8 +345,8 @@ def main():
     st.divider()
     st.subheader("Paper Trading (Simulated)")
     st.caption(
-        f"Long-only, opens on the same delta-zone trigger as the scan above. "
-        f"Max {2} open positions, checks top RVOL candidates each cycle. "
+        f"Long or short, entered once per day at the close of the first 5-min candle "
+        f"for the top 5 RVOL candidates in the delta-zone breakout table. "
         f"P&L calculated at 1 share/position (signal-quality check, not real sizing). "
         f"No real orders are ever placed. Resets if the app reboots."
     )
@@ -388,3 +388,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

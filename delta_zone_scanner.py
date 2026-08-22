@@ -1,21 +1,27 @@
 """
 delta_zone_scanner.py
 
-Screens the F&O universe for stocks where LTP is trading above ALL of:
+Screens the F&O universe for stocks with a valid breakout in EITHER
+direction:
+
+LONG:  LTP above ALL of POC, VWAP, locked support zone, locked resistance zone.
+SHORT: LTP below ALL of POC, VWAP, locked support zone, locked resistance zone
+       (mirror image -- price broke down through both prior delta zones).
+
     - POC (fixed for the day: VWAP of the first 5 one-minute candles, held
       constant once computed -- NOT a continuously updating day VWAP)
     - Session VWAP (continuously updating across today's candles so far)
-    - Locked green delta-support zone (prior "strong buy" day's low + buffer)
-    - Locked red delta-resistance zone (prior "strong sell" day's high + buffer)
-
-Mirrors the Pine indicator you shared (Merged Value Areas + Volume Delta Zones).
+    - Locked delta zones: TOP variant (level + buffer) used for the long
+      check, BOTTOM variant (level - buffer) used for the short check --
+      mirrors backtest_one_day.py's asymmetric zone logic.
 
 Also computes, per stock, reusing the same fetched data (no extra API calls):
     - RVOL % (time-of-day-adjusted volume pace proxy vs 20-day average)
     - ATR % (actual 14-day Average True Range as % of price)
-    - Suggested Stop Loss / Target (ATR%-sized, per Stage 4 of the strategy:
-      stop = 1.25x ATR%, target = 1.75x that stop distance). LONG-only sizing,
-      since this scan's trigger condition is a bullish breakout.
+    - Suggested Stop Loss / Target (ATR%-sized, per Stage 4: stop = 1.25x
+      ATR%, target = 1.75x that stop distance). Sign follows Side: long
+      stop is below entry/target above; short stop is above entry/target
+      below.
 
 This is a HEAVIER scan than the RVOL scanner: for each stock it needs
 (1) today's intraday candles and (2) ~90 days of daily candles, so two
@@ -138,8 +144,15 @@ def calculate_rvol_percent(daily: np.ndarray, today: np.ndarray,
 
 def _find_locked_zones(daily: np.ndarray, last_price: float,
                         lookback=DELTA_LOOKBACK, threshold=STRENGTH_THRESHOLD, zone_width=ZONE_WIDTH):
+    """
+    Returns (support_zone_top, resistance_zone_top, support_zone_bottom, resistance_zone_bottom).
+    TOP variants (level + buffer) are used for the LONG check (price must
+    clear the zone entirely, buffer makes the bar slightly higher).
+    BOTTOM variants (level - buffer) are used for the SHORT check (mirror --
+    price must clear the zone entirely to the downside).
+    """
     if daily is None or len(daily) < lookback + 1:
-        return None, None
+        return None, None, None, None
 
     cum_delta = _compute_cumulative_delta(daily)
     support_low, resistance_high = None, None
@@ -157,7 +170,9 @@ def _find_locked_zones(daily: np.ndarray, last_price: float,
 
     support_zone_top = (support_low + last_price * zone_width) if support_low is not None else None
     resistance_zone_top = (resistance_high + last_price * zone_width) if resistance_high is not None else None
-    return support_zone_top, resistance_zone_top
+    support_zone_bottom = (support_low - last_price * zone_width) if support_low is not None else None
+    resistance_zone_bottom = (resistance_high - last_price * zone_width) if resistance_high is not None else None
+    return support_zone_top, resistance_zone_top, support_zone_bottom, resistance_zone_bottom
 
 
 def evaluate_stock(symbol, instrument_key, access_token):
@@ -174,29 +189,43 @@ def evaluate_stock(symbol, instrument_key, access_token):
 
     vwap = _compute_session_vwap(today)          # continuously updating, whole day so far
     poc = _compute_first_candle_poc(today)        # fixed once from first 5 one-min candles
-    support_zone_top, resistance_zone_top = _find_locked_zones(daily, last_price=ltp)
+    support_zone_top, resistance_zone_top, support_zone_bottom, resistance_zone_bottom = \
+        _find_locked_zones(daily, last_price=ltp)
 
+    # ---- LONG conditions ----
     above_poc = ltp > poc
     above_vwap = ltp > vwap
     above_support = (ltp > support_zone_top) if support_zone_top is not None else True
     above_resistance = (ltp > resistance_zone_top) if resistance_zone_top is not None else True
-    all_conditions_met = above_poc and above_vwap and above_support and above_resistance
+    long_conditions_met = above_poc and above_vwap and above_support and above_resistance
+
+    # ---- SHORT conditions (mirror image) ----
+    below_poc = ltp < poc
+    below_vwap = ltp < vwap
+    below_support = (ltp < support_zone_bottom) if support_zone_bottom is not None else True
+    below_resistance = (ltp < resistance_zone_bottom) if resistance_zone_bottom is not None else True
+    short_conditions_met = below_poc and below_vwap and below_support and below_resistance
 
     atr_pct = calculate_atr_percent(daily)
     rvol_pct = calculate_rvol_percent(daily, today)
 
     # Stage 4 sizing: stop = 1.25x ATR% from LTP, target = 1.75x that stop
-    # distance. This scan is bullish-breakout-only (see module docstring),
-    # so stop/target are always computed for a LONG -- stop below LTP,
-    # target above. Only meaningful once ATR% is available.
-    stop_loss, target = None, None
-    if atr_pct is not None:
+    # distance. Direction follows Side.
+    side, stop_loss, target = None, None, None
+    if long_conditions_met and atr_pct is not None:
+        side = "long"
         stop_distance = ltp * (atr_pct / 100) * STOP_ATR_MULT
         stop_loss = ltp - stop_distance
         target = ltp + stop_distance * TARGET_R_MULTIPLE
+    elif short_conditions_met and atr_pct is not None:
+        side = "short"
+        stop_distance = ltp * (atr_pct / 100) * STOP_ATR_MULT
+        stop_loss = ltp + stop_distance
+        target = ltp - stop_distance * TARGET_R_MULTIPLE
 
     result = {
         "Symbol": symbol,
+        "Side": side,
         "LTP": round(ltp, 2),
         "RVOL %": round(rvol_pct, 1) if rvol_pct is not None else None,
         "ATR %": round(atr_pct, 2) if atr_pct is not None else None,
@@ -206,7 +235,9 @@ def evaluate_stock(symbol, instrument_key, access_token):
         "VWAP": round(vwap, 2),
         "Support Zone Top": round(support_zone_top, 2) if support_zone_top else None,
         "Resistance Zone Top": round(resistance_zone_top, 2) if resistance_zone_top else None,
-        "All Conditions Met": all_conditions_met,
+        "Support Zone Bottom": round(support_zone_bottom, 2) if support_zone_bottom else None,
+        "Resistance Zone Bottom": round(resistance_zone_bottom, 2) if resistance_zone_bottom else None,
+        "All Conditions Met": long_conditions_met or short_conditions_met,
     }
     return result
 
