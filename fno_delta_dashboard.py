@@ -202,9 +202,16 @@ def compute_levels_and_baseline(df):
         not pd.isna(yesterday_close) and
         yesterday_close > support_before_today and yesterday_close > resistance_before_today
     )
+    already_below_yesterday = (
+        not pd.isna(support_before_today) and not pd.isna(resistance_before_today) and
+        not pd.isna(yesterday_close) and
+        yesterday_close < support_before_today and yesterday_close < resistance_before_today
+    )
 
-    crossover_time_str = None
+    crossover_time_str = None  # bullish: first candle closing above BOTH levels
+    crossunder_time_str = None  # bearish: first candle closing below BOTH levels
     has_prior_levels = not pd.isna(support_before_today) and not pd.isna(resistance_before_today)
+
     if has_prior_levels and not already_above_yesterday:
         prev_above = False
         for _, row in today_df.iterrows():
@@ -213,6 +220,15 @@ def compute_levels_and_baseline(df):
                 crossover_time_str = row["timestamp"].strftime("%H:%M")
                 break
             prev_above = above_now
+
+    if has_prior_levels and not already_below_yesterday:
+        prev_below = False
+        for _, row in today_df.iterrows():
+            below_now = row["close"] < support_before_today and row["close"] < resistance_before_today
+            if below_now and not prev_below:
+                crossunder_time_str = row["timestamp"].strftime("%H:%M")
+                break
+            prev_below = below_now
 
     baseline_days = prior_days[-10:]
     rvol_baseline = {}
@@ -232,7 +248,9 @@ def compute_levels_and_baseline(df):
         "delta_resistance": None if pd.isna(resistance_before_today) else round(resistance_before_today, 2),
         "yesterday_close": None if pd.isna(yesterday_close) else round(yesterday_close, 2),
         "already_above_yesterday": bool(already_above_yesterday),
+        "already_below_yesterday": bool(already_below_yesterday),
         "crossover_time": crossover_time_str,
+        "crossunder_time": crossunder_time_str,
         "rvol_baseline": rvol_baseline,
         "computed_date": str(today),
     }
@@ -274,9 +292,13 @@ def run_precompute(token, progress_callback=None):
     state = {"_date": today_str}
     for symbol, levels in cache.items():
         if levels.get("already_above_yesterday"):
-            state[symbol] = {"status": "continuing"}
+            state[symbol] = {"status": "continuing_up"}
+        elif levels.get("already_below_yesterday"):
+            state[symbol] = {"status": "continuing_down"}
         elif levels.get("crossover_time"):
-            state[symbol] = {"status": "crossed", "time": levels["crossover_time"]}
+            state[symbol] = {"status": "crossed_up", "time": levels["crossover_time"]}
+        elif levels.get("crossunder_time"):
+            state[symbol] = {"status": "crossed_down", "time": levels["crossunder_time"]}
     with open(STATE_PATH, "w") as f:
         json.dump(state, f, indent=2)
 
@@ -336,6 +358,7 @@ def run_live_scan(cache, state, token):
         resistance = levels["delta_resistance"]
         poc = levels["poc"]
         already_above_yesterday = levels["already_above_yesterday"]
+        already_below_yesterday = levels.get("already_below_yesterday", False)
 
         current_price = q.get("last_price")
         today_volume = q.get("volume")
@@ -349,20 +372,34 @@ def run_live_scan(cache, state, token):
             status = "no prior delta zone yet"
         else:
             is_above_both = current_price > support and current_price > resistance
+            is_below_both = current_price < support and current_price < resistance
             prior_state = state.get(symbol)
+            prior_status = prior_state.get("status") if prior_state else None
 
             if is_above_both:
-                if already_above_yesterday and prior_state is None:
+                if already_above_yesterday and prior_status is None:
                     status = "ABOVE BOTH (continuing)"
-                    state[symbol] = {"status": "continuing"}
-                elif prior_state is not None and prior_state.get("status") in ("crossed", "continuing"):
-                    if prior_state.get("status") == "crossed":
-                        status = f"JUST CROSSED @ {prior_state['time']}"
+                    state[symbol] = {"status": "continuing_up"}
+                elif prior_status in ("crossed_up", "continuing_up"):
+                    if prior_status == "crossed_up":
+                        status = f"JUST CROSSED UP @ {prior_state['time']}"
                     else:
                         status = "ABOVE BOTH (continuing)"
                 else:
-                    status = f"JUST CROSSED @ {now_time_str}"
-                    state[symbol] = {"status": "crossed", "time": now_time_str}
+                    status = f"JUST CROSSED UP @ {now_time_str}"
+                    state[symbol] = {"status": "crossed_up", "time": now_time_str}
+            elif is_below_both:
+                if already_below_yesterday and prior_status is None:
+                    status = "BELOW BOTH (continuing)"
+                    state[symbol] = {"status": "continuing_down"}
+                elif prior_status in ("crossed_down", "continuing_down"):
+                    if prior_status == "crossed_down":
+                        status = f"JUST CROSSED DOWN @ {prior_state['time']}"
+                    else:
+                        status = "BELOW BOTH (continuing)"
+                else:
+                    status = f"JUST CROSSED DOWN @ {now_time_str}"
+                    state[symbol] = {"status": "crossed_down", "time": now_time_str}
             else:
                 status = "-"
                 if symbol in state:
@@ -384,8 +421,9 @@ def run_live_scan(cache, state, token):
     def sort_key(row):
         status = row["Status"]
         if status.startswith("JUST CROSSED"):
-            return (0, status.replace("JUST CROSSED @ ", ""))
-        elif status == "ABOVE BOTH (continuing)":
+            time_part = status.split("@ ")[-1]
+            return (0, time_part)
+        elif status in ("ABOVE BOTH (continuing)", "BELOW BOTH (continuing)"):
             return (1, "")
         else:
             return (2, "")
@@ -487,16 +525,22 @@ last_update = st.session_state.get("last_update", "-")
 st.subheader(f"Live Watchlist - last updated {last_update}")
 
 intraday_df = result_df[
-    result_df["Status"].str.startswith("JUST CROSSED") | (result_df["Status"] == "ABOVE BOTH (continuing)")
+    result_df["Status"].str.startswith("JUST CROSSED") |
+    result_df["Status"].isin(["ABOVE BOTH (continuing)", "BELOW BOTH (continuing)"])
 ].copy()
 intraday_df["S.No"] = range(1, len(intraday_df) + 1)
 
 
 def highlight_status(row):
-    if row["Status"].startswith("JUST CROSSED"):
-        return ["background-color: #d4f7d4"] * len(row)
-    elif row["Status"] == "ABOVE BOTH (continuing)":
-        return ["background-color: #eaf5ff"] * len(row)
+    status = row["Status"]
+    if status.startswith("JUST CROSSED UP"):
+        return ["background-color: #d4f7d4"] * len(row)  # green - fresh bullish
+    elif status.startswith("JUST CROSSED DOWN"):
+        return ["background-color: #f7d4d4"] * len(row)  # red - fresh bearish
+    elif status == "ABOVE BOTH (continuing)":
+        return ["background-color: #eaf5ff"] * len(row)  # light blue - continuing bullish
+    elif status == "BELOW BOTH (continuing)":
+        return ["background-color: #fff0e0"] * len(row)  # light orange - continuing bearish
     return [""] * len(row)
 
 
