@@ -22,11 +22,19 @@ the sidebar (kept in-session only, never written to disk).
 import os
 import json
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import requests
 import pandas as pd
 import streamlit as st
+
+# Streamlit Cloud servers run in UTC, not IST - use an explicit fixed IST
+# offset for all "current time" logic so RVOL matching and crossover
+# timestamps are correct regardless of server timezone.
+IST = timezone(timedelta(hours=5, minutes=30))
+
+def now_ist():
+    return datetime.now(IST)
 
 try:
     from streamlit_autorefresh import st_autorefresh
@@ -115,8 +123,8 @@ def resolve_equity_instrument_key(symbol, token):
 
 
 def fetch_candles(instrument_key, token):
-    to_date = datetime.now().strftime("%Y-%m-%d")
-    from_date = (datetime.now() - timedelta(days=LOOKBACK_CALENDAR_DAYS)).strftime("%Y-%m-%d")
+    to_date = now_ist().strftime("%Y-%m-%d")
+    from_date = (now_ist() - timedelta(days=LOOKBACK_CALENDAR_DAYS)).strftime("%Y-%m-%d")
     url = f"https://api.upstox.com/v3/historical-candle/{instrument_key}/{UNIT}/{INTERVAL_VALUE}/{to_date}/{from_date}"
     headers = {"Accept": "application/json", "Authorization": f"Bearer {token}"}
     resp = requests.get(url, headers=headers, timeout=20)
@@ -262,7 +270,7 @@ def run_precompute(token, progress_callback=None):
     with open(CACHE_PATH, "w") as f:
         json.dump(cache, f, indent=2)
 
-    today_str = datetime.now().strftime("%Y-%m-%d")
+    today_str = now_ist().strftime("%Y-%m-%d")
     state = {"_date": today_str}
     for symbol, levels in cache.items():
         if levels.get("already_above_yesterday"):
@@ -305,8 +313,8 @@ def nearest_rvol_baseline(rvol_baseline, current_time_str):
 
 
 def run_live_scan(cache, state, token):
-    today_str = datetime.now().strftime("%Y-%m-%d")
-    now_time_str = datetime.now().strftime("%H:%M")
+    today_str = now_ist().strftime("%Y-%m-%d")
+    now_time_str = now_ist().strftime("%H:%M")
     if state.get("_date") != today_str:
         state = {"_date": today_str}
 
