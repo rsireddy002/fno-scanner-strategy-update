@@ -334,7 +334,7 @@ def nearest_rvol_baseline(rvol_baseline, current_time_str):
     return rvol_baseline[max(candidates)]
 
 
-def run_live_scan(cache, state, token):
+def run_live_scan(cache, state, token, max_zone_width_pct=1.5):
     today_str = now_ist().strftime("%Y-%m-%d")
     now_time_str = now_ist().strftime("%H:%M")
     if state.get("_date") != today_str:
@@ -370,7 +370,11 @@ def run_live_scan(cache, state, token):
 
         if support is None or resistance is None or current_price is None:
             status = "no prior delta zone yet"
+            zone_width_pct = None
         else:
+            zone_width_pct = round(((resistance - support) / current_price) * 100, 2)
+            is_wide_zone = zone_width_pct > max_zone_width_pct
+
             is_above_both = current_price > support and current_price > resistance
             is_below_both = current_price < support and current_price < resistance
             prior_state = state.get(symbol)
@@ -388,6 +392,8 @@ def run_live_scan(cache, state, token):
                 else:
                     status = f"JUST CROSSED UP @ {now_time_str}"
                     state[symbol] = {"status": "crossed_up", "time": now_time_str}
+                if status.startswith("JUST CROSSED") and is_wide_zone:
+                    status += " (wide zone - caution)"
             elif is_below_both:
                 if already_below_yesterday and prior_status is None:
                     status = "BELOW BOTH (continuing)"
@@ -400,6 +406,8 @@ def run_live_scan(cache, state, token):
                 else:
                     status = f"JUST CROSSED DOWN @ {now_time_str}"
                     state[symbol] = {"status": "crossed_down", "time": now_time_str}
+                if status.startswith("JUST CROSSED") and is_wide_zone:
+                    status += " (wide zone - caution)"
             else:
                 status = "-"
                 if symbol in state:
@@ -408,6 +416,7 @@ def run_live_scan(cache, state, token):
         results.append({
             "Symbol": symbol, "CurrentPrice": current_price, "POC": poc,
             "DeltaSupport": support, "DeltaResistance": resistance,
+            "ZoneWidth%": zone_width_pct,
             "RVOL%": rvol_pct, "Status": status,
         })
 
@@ -452,6 +461,11 @@ with st.sidebar:
 
     st.divider()
     st.header("Step 2: Live Refresh")
+    max_zone_width_pct = st.slider(
+        "Max Zone Width % (flag entries wider than this)", 0.5, 5.0, 1.5, 0.1,
+        help="If the gap between Delta Support and Delta Resistance exceeds this % of price, "
+             "fresh crossover signals get flagged '(wide zone - caution)' instead of treated as clean entries."
+    )
     refresh_now = st.button("Refresh Live Data Now", use_container_width=True)
 
     auto_refresh = st.checkbox("Auto-refresh", value=False)
@@ -510,7 +524,7 @@ should_refresh = refresh_now or auto_refresh
 
 if should_refresh:
     with st.spinner("Fetching live quotes..."):
-        result_df, state, now_time_str = run_live_scan(cache, st.session_state["state"], token)
+        result_df, state, now_time_str = run_live_scan(cache, st.session_state["state"], token, max_zone_width_pct)
     st.session_state["state"] = state
     st.session_state["result_df"] = result_df
     st.session_state["last_update"] = now_time_str
@@ -533,7 +547,9 @@ intraday_df["S.No"] = range(1, len(intraday_df) + 1)
 
 def highlight_status(row):
     status = row["Status"]
-    if status.startswith("JUST CROSSED UP"):
+    if "(wide zone" in status:
+        return ["background-color: #4a4a2a"] * len(row)  # dim yellow-gray - caution, don't enter
+    elif status.startswith("JUST CROSSED UP"):
         return ["background-color: #d4f7d4"] * len(row)  # green - fresh bullish
     elif status.startswith("JUST CROSSED DOWN"):
         return ["background-color: #f7d4d4"] * len(row)  # red - fresh bearish
