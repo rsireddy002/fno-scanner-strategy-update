@@ -1,5 +1,25 @@
-__pycache__/
-fno_universe.json
-rvol_atr_baseline.json
-*.pyc
+# Secrets - never commit tokens
 .env
+*token*.txt
+access_token*
+
+# Local cache/state files (regenerated daily, no need to version them)
+fno_levels_cache.json
+fno_crossed_state.json
+fno_live_full.csv
+fno_intraday_watchlist.csv
+fno_delta_scanner_full.csv
+fno_delta_scanner_output.csv
+*_lipi_extract_output.csv
+
+# NSE symbol list (manually downloaded, machine-specific)
+fo_mktlots.csv
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Streamlit
+.streamlit/secrets.toml

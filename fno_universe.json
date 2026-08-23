@@ -1,0 +1,1045 @@
+{
+  "generated_at": 1787399131.0673413,
+  "universe": {
+    "MARUTI": {
+      "equity_key": "NSE_EQ|INE585B01010",
+      "futures_key": "NSE_FO|58306",
+      "futures_expiry": 1787682599000
+    },
+    "NATIONALUM": {
+      "equity_key": "NSE_EQ|INE139A01034",
+      "futures_key": "NSE_FO|58327",
+      "futures_expiry": 1787682599000
+    },
+    "MANAPPURAM": {
+      "equity_key": "NSE_EQ|INE522D01027",
+      "futures_key": "NSE_FO|58303",
+      "futures_expiry": 1787682599000
+    },
+    "DALBHARAT": {
+      "equity_key": "NSE_EQ|INE00R701025",
+      "futures_key": "NSE_FO|58158",
+      "futures_expiry": 1787682599000
+    },
+    "BAJAJ-AUTO": {
+      "equity_key": "NSE_EQ|INE917I01010",
+      "futures_key": "NSE_FO|58118",
+      "futures_expiry": 1787682599000
+    },
+    "HINDZINC": {
+      "equity_key": "NSE_EQ|INE267A01025",
+      "futures_key": "NSE_FO|58228",
+      "futures_expiry": 1787682599000
+    },
+    "360ONE": {
+      "equity_key": "NSE_EQ|INE466L01038",
+      "futures_key": "NSE_FO|58074",
+      "futures_expiry": 1787682599000
+    },
+    "SHREECEM": {
+      "equity_key": "NSE_EQ|INE070A01015",
+      "futures_key": "NSE_FO|58383",
+      "futures_expiry": 1787682599000
+    },
+    "JINDALSTEL": {
+      "equity_key": "NSE_EQ|INE749A01030",
+      "futures_key": "NSE_FO|58251",
+      "futures_expiry": 1787682599000
+    },
+    "BDL": {
+      "equity_key": "NSE_EQ|INE171Z01026",
+      "futures_key": "NSE_FO|58126",
+      "futures_expiry": 1787682599000
+    },
+    "COFORGE": {
+      "equity_key": "NSE_EQ|INE591G01025",
+      "futures_key": "NSE_FO|58152",
+      "futures_expiry": 1787682599000
+    },
+    "PNB": {
+      "equity_key": "NSE_EQ|INE160A01022",
+      "futures_key": "NSE_FO|58350",
+      "futures_expiry": 1787682599000
+    },
+    "CDSL": {
+      "equity_key": "NSE_EQ|INE736A01011",
+      "futures_key": "NSE_FO|58144",
+      "futures_expiry": 1787682599000
+    },
+    "ADANIPOWER": {
+      "equity_key": "NSE_EQ|INE814H01029",
+      "futures_key": "NSE_FO|58091",
+      "futures_expiry": 1787682599000
+    },
+    "GODREJCP": {
+      "equity_key": "NSE_EQ|INE102D01028",
+      "futures_key": "NSE_FO|58201",
+      "futures_expiry": 1787682599000
+    },
+    "PFC": {
+      "equity_key": "NSE_EQ|INE134E01011",
+      "futures_key": "NSE_FO|58345",
+      "futures_expiry": 1787682599000
+    },
+    "INFY": {
+      "equity_key": "NSE_EQ|INE009A01021",
+      "futures_key": "NSE_FO|58245",
+      "futures_expiry": 1787682599000
+    },
+    "KAYNES": {
+      "equity_key": "NSE_EQ|INE918Z01012",
+      "futures_key": "NSE_FO|58274",
+      "futures_expiry": 1787682599000
+    },
+    "BIOCON": {
+      "equity_key": "NSE_EQ|INE376G01013",
+      "futures_key": "NSE_FO|58134",
+      "futures_expiry": 1787682599000
+    },
+    "PATANJALI": {
+      "equity_key": "NSE_EQ|INE619A01035",
+      "futures_key": "NSE_FO|58341",
+      "futures_expiry": 1787682599000
+    },
+    "BHARATFORG": {
+      "equity_key": "NSE_EQ|INE465A01025",
+      "futures_key": "NSE_FO|58131",
+      "futures_expiry": 1787682599000
+    },
+    "ALKEM": {
+      "equity_key": "NSE_EQ|INE540L01014",
+      "futures_key": "NSE_FO|58100",
+      "futures_expiry": 1787682599000
+    },
+    "KOTAKBANK": {
+      "equity_key": "NSE_EQ|INE237A01036",
+      "futures_key": "NSE_FO|58277",
+      "futures_expiry": 1787682599000
+    },
+    "DIVISLAB": {
+      "equity_key": "NSE_EQ|INE361B01024",
+      "futures_key": "NSE_FO|58160",
+      "futures_expiry": 1787682599000
+    },
+    "PRESTIGE": {
+      "equity_key": "NSE_EQ|INE811K01011",
+      "futures_key": "NSE_FO|58360",
+      "futures_expiry": 1787682599000
+    },
+    "VMM": {
+      "equity_key": "NSE_EQ|INE01EA01019",
+      "futures_key": "NSE_FO|58416",
+      "futures_expiry": 1787682599000
+    },
+    "HINDUNILVR": {
+      "equity_key": "NSE_EQ|INE030A01027",
+      "futures_key": "NSE_FO|58227",
+      "futures_expiry": 1787682599000
+    },
+    "CANBK": {
+      "equity_key": "NSE_EQ|INE476A01022",
+      "futures_key": "NSE_FO|58143",
+      "futures_expiry": 1787682599000
+    },
+    "MCX": {
+      "equity_key": "NSE_EQ|INE745G01043",
+      "futures_key": "NSE_FO|58316",
+      "futures_expiry": 1787682599000
+    },
+    "SHRIRAMFIN": {
+      "equity_key": "NSE_EQ|INE721A01047",
+      "futures_key": "NSE_FO|58386",
+      "futures_expiry": 1787682599000
+    },
+    "BANKBARODA": {
+      "equity_key": "NSE_EQ|INE028A01039",
+      "futures_key": "NSE_FO|58123",
+      "futures_expiry": 1787682599000
+    },
+    "LODHA": {
+      "equity_key": "NSE_EQ|INE670K01029",
+      "futures_key": "NSE_FO|58291",
+      "futures_expiry": 1787682599000
+    },
+    "HEROMOTOCO": {
+      "equity_key": "NSE_EQ|INE158A01026",
+      "futures_key": "NSE_FO|58218",
+      "futures_expiry": 1787682599000
+    },
+    "UNOMINDA": {
+      "equity_key": "NSE_EQ|INE405E01023",
+      "futures_key": "NSE_FO|58412",
+      "futures_expiry": 1787682599000
+    },
+    "SBILIFE": {
+      "equity_key": "NSE_EQ|INE123W01016",
+      "futures_key": "NSE_FO|58377",
+      "futures_expiry": 1787682599000
+    },
+    "TATACONSUM": {
+      "equity_key": "NSE_EQ|INE192A01025",
+      "futures_key": "NSE_FO|58395",
+      "futures_expiry": 1787682599000
+    },
+    "BAJAJHLDNG": {
+      "equity_key": "NSE_EQ|INE118A01012",
+      "futures_key": "NSE_FO|58120",
+      "futures_expiry": 1787682599000
+    },
+    "ABCAPITAL": {
+      "equity_key": "NSE_EQ|INE674K01013",
+      "futures_key": "NSE_FO|58086",
+      "futures_expiry": 1787682599000
+    },
+    "HINDPETRO": {
+      "equity_key": "NSE_EQ|INE094A01015",
+      "futures_key": "NSE_FO|58226",
+      "futures_expiry": 1787682599000
+    },
+    "YESBANK": {
+      "equity_key": "NSE_EQ|INE528G01035",
+      "futures_key": "NSE_FO|58420",
+      "futures_expiry": 1787682599000
+    },
+    "OBEROIRLTY": {
+      "equity_key": "NSE_EQ|INE093I01010",
+      "futures_key": "NSE_FO|58335",
+      "futures_expiry": 1787682599000
+    },
+    "ICICIPRULI": {
+      "equity_key": "NSE_EQ|INE726G01019",
+      "futures_key": "NSE_FO|58234",
+      "futures_expiry": 1787682599000
+    },
+    "SONACOMS": {
+      "equity_key": "NSE_EQ|INE073K01018",
+      "futures_key": "NSE_FO|58389",
+      "futures_expiry": 1787682599000
+    },
+    "ASTRAL": {
+      "equity_key": "NSE_EQ|INE006I01046",
+      "futures_key": "NSE_FO|58108",
+      "futures_expiry": 1787682599000
+    },
+    "TRENT": {
+      "equity_key": "NSE_EQ|INE849A01020",
+      "futures_key": "NSE_FO|58405",
+      "futures_expiry": 1787682599000
+    },
+    "TECHM": {
+      "equity_key": "NSE_EQ|INE669C01036",
+      "futures_key": "NSE_FO|58400",
+      "futures_expiry": 1787682599000
+    },
+    "BRITANNIA": {
+      "equity_key": "NSE_EQ|INE216A01030",
+      "futures_key": "NSE_FO|58140",
+      "futures_expiry": 1787682599000
+    },
+    "CONCOR": {
+      "equity_key": "NSE_EQ|INE111A01025",
+      "futures_key": "NSE_FO|58154",
+      "futures_expiry": 1787682599000
+    },
+    "SBIN": {
+      "equity_key": "NSE_EQ|INE062A01020",
+      "futures_key": "NSE_FO|58382",
+      "futures_expiry": 1787682599000
+    },
+    "TATASTEEL": {
+      "equity_key": "NSE_EQ|INE081A01020",
+      "futures_key": "NSE_FO|58398",
+      "futures_expiry": 1787682599000
+    },
+    "WIPRO": {
+      "equity_key": "NSE_EQ|INE075A01022",
+      "futures_key": "NSE_FO|58419",
+      "futures_expiry": 1787682599000
+    },
+    "LTF": {
+      "equity_key": "NSE_EQ|INE498L01015",
+      "futures_key": "NSE_FO|58297",
+      "futures_expiry": 1787682599000
+    },
+    "WAAREEENER": {
+      "equity_key": "NSE_EQ|INE377N01017",
+      "futures_key": "NSE_FO|58418",
+      "futures_expiry": 1787682599000
+    },
+    "GODREJPROP": {
+      "equity_key": "NSE_EQ|INE484J01027",
+      "futures_key": "NSE_FO|58207",
+      "futures_expiry": 1787682599000
+    },
+    "VEDL": {
+      "equity_key": "NSE_EQ|INE205A01025",
+      "futures_key": "NSE_FO|58415",
+      "futures_expiry": 1787682599000
+    },
+    "MAXHEALTH": {
+      "equity_key": "NSE_EQ|INE027H01010",
+      "futures_key": "NSE_FO|58307",
+      "futures_expiry": 1787682599000
+    },
+    "NAM-INDIA": {
+      "equity_key": "NSE_EQ|INE298J01013",
+      "futures_key": "NSE_FO|58326",
+      "futures_expiry": 1787682599000
+    },
+    "CHOLAFIN": {
+      "equity_key": "NSE_EQ|INE121A01024",
+      "futures_key": "NSE_FO|58146",
+      "futures_expiry": 1787682599000
+    },
+    "TIINDIA": {
+      "equity_key": "NSE_EQ|INE974X01010",
+      "futures_key": "NSE_FO|58401",
+      "futures_expiry": 1787682599000
+    },
+    "UNITDSPR": {
+      "equity_key": "NSE_EQ|INE854D01024",
+      "futures_key": "NSE_FO|58409",
+      "futures_expiry": 1787682599000
+    },
+    "ADANIPORTS": {
+      "equity_key": "NSE_EQ|INE742F01042",
+      "futures_key": "NSE_FO|58090",
+      "futures_expiry": 1787682599000
+    },
+    "VOLTAS": {
+      "equity_key": "NSE_EQ|INE226A01021",
+      "futures_key": "NSE_FO|58417",
+      "futures_expiry": 1787682599000
+    },
+    "GRASIM": {
+      "equity_key": "NSE_EQ|INE047A01021",
+      "futures_key": "NSE_FO|58208",
+      "futures_expiry": 1787682599000
+    },
+    "LUPIN": {
+      "equity_key": "NSE_EQ|INE326A01037",
+      "futures_key": "NSE_FO|58301",
+      "futures_expiry": 1787682599000
+    },
+    "NMDC": {
+      "equity_key": "NSE_EQ|INE584A01023",
+      "futures_key": "NSE_FO|58332",
+      "futures_expiry": 1787682599000
+    },
+    "MUTHOOTFIN": {
+      "equity_key": "NSE_EQ|INE414G01012",
+      "futures_key": "NSE_FO|58322",
+      "futures_expiry": 1787682599000
+    },
+    "IDEA": {
+      "equity_key": "NSE_EQ|INE669E01016",
+      "futures_key": "NSE_FO|58235",
+      "futures_expiry": 1787682599000
+    },
+    "PHOENIXLTD": {
+      "equity_key": "NSE_EQ|INE211B01039",
+      "futures_key": "NSE_FO|58347",
+      "futures_expiry": 1787682599000
+    },
+    "INOXWIND": {
+      "equity_key": "NSE_EQ|INE066P01011",
+      "futures_key": "NSE_FO|58246",
+      "futures_expiry": 1787682599000
+    },
+    "ONGC": {
+      "equity_key": "NSE_EQ|INE213A01029",
+      "futures_key": "NSE_FO|58339",
+      "futures_expiry": 1787682599000
+    },
+    "ADANIENSOL": {
+      "equity_key": "NSE_EQ|INE931S01010",
+      "futures_key": "NSE_FO|58087",
+      "futures_expiry": 1787682599000
+    },
+    "COCHINSHIP": {
+      "equity_key": "NSE_EQ|INE704P01025",
+      "futures_key": "NSE_FO|58149",
+      "futures_expiry": 1787682599000
+    },
+    "IRFC": {
+      "equity_key": "NSE_EQ|INE053F01010",
+      "futures_key": "NSE_FO|58249",
+      "futures_expiry": 1787682599000
+    },
+    "HDFCAMC": {
+      "equity_key": "NSE_EQ|INE127D01025",
+      "futures_key": "NSE_FO|58215",
+      "futures_expiry": 1787682599000
+    },
+    "ASIANPAINT": {
+      "equity_key": "NSE_EQ|INE021A01026",
+      "futures_key": "NSE_FO|58107",
+      "futures_expiry": 1787682599000
+    },
+    "MPHASIS": {
+      "equity_key": "NSE_EQ|INE356A01018",
+      "futures_key": "NSE_FO|58321",
+      "futures_expiry": 1787682599000
+    },
+    "NTPC": {
+      "equity_key": "NSE_EQ|INE733E01010",
+      "futures_key": "NSE_FO|58333",
+      "futures_expiry": 1787682599000
+    },
+    "IEX": {
+      "equity_key": "NSE_EQ|INE022Q01020",
+      "futures_key": "NSE_FO|58237",
+      "futures_expiry": 1787682599000
+    },
+    "LICHSGFIN": {
+      "equity_key": "NSE_EQ|INE115A01026",
+      "futures_key": "NSE_FO|58289",
+      "futures_expiry": 1787682599000
+    },
+    "CAMS": {
+      "equity_key": "NSE_EQ|INE596I01020",
+      "futures_key": "NSE_FO|58142",
+      "futures_expiry": 1787682599000
+    },
+    "APLAPOLLO": {
+      "equity_key": "NSE_EQ|INE702C01027",
+      "futures_key": "NSE_FO|58104",
+      "futures_expiry": 1787682599000
+    },
+    "NYKAA": {
+      "equity_key": "NSE_EQ|INE388Y01029",
+      "futures_key": "NSE_FO|58334",
+      "futures_expiry": 1787682599000
+    },
+    "ABB": {
+      "equity_key": "NSE_EQ|INE117A01022",
+      "futures_key": "NSE_FO|58075",
+      "futures_expiry": 1787682599000
+    },
+    "NESTLEIND": {
+      "equity_key": "NSE_EQ|INE239A01024",
+      "futures_key": "NSE_FO|58330",
+      "futures_expiry": 1787682599000
+    },
+    "APOLLOHOSP": {
+      "equity_key": "NSE_EQ|INE437A01024",
+      "futures_key": "NSE_FO|58105",
+      "futures_expiry": 1787682599000
+    },
+    "TATAPOWER": {
+      "equity_key": "NSE_EQ|INE245A01021",
+      "futures_key": "NSE_FO|58397",
+      "futures_expiry": 1787682599000
+    },
+    "INDHOTEL": {
+      "equity_key": "NSE_EQ|INE053A01029",
+      "futures_key": "NSE_FO|58240",
+      "futures_expiry": 1787682599000
+    },
+    "MARICO": {
+      "equity_key": "NSE_EQ|INE196A01026",
+      "futures_key": "NSE_FO|58305",
+      "futures_expiry": 1787682599000
+    },
+    "INDUSTOWER": {
+      "equity_key": "NSE_EQ|INE121J01017",
+      "futures_key": "NSE_FO|58244",
+      "futures_expiry": 1787682599000
+    },
+    "JSWENERGY": {
+      "equity_key": "NSE_EQ|INE121E01018",
+      "futures_key": "NSE_FO|58257",
+      "futures_expiry": 1787682599000
+    },
+    "JSWSTEEL": {
+      "equity_key": "NSE_EQ|INE019A01038",
+      "futures_key": "NSE_FO|58258",
+      "futures_expiry": 1787682599000
+    },
+    "COALINDIA": {
+      "equity_key": "NSE_EQ|INE522F01014",
+      "futures_key": "NSE_FO|58148",
+      "futures_expiry": 1787682599000
+    },
+    "BAJFINANCE": {
+      "equity_key": "NSE_EQ|INE296A01032",
+      "futures_key": "NSE_FO|58121",
+      "futures_expiry": 1787682599000
+    },
+    "NBCC": {
+      "equity_key": "NSE_EQ|INE095N01031",
+      "futures_key": "NSE_FO|58329",
+      "futures_expiry": 1787682599000
+    },
+    "HAL": {
+      "equity_key": "NSE_EQ|INE066F01020",
+      "futures_key": "NSE_FO|58212",
+      "futures_expiry": 1787682599000
+    },
+    "RELIANCE": {
+      "equity_key": "NSE_EQ|INE002A01018",
+      "futures_key": "NSE_FO|58371",
+      "futures_expiry": 1787682599000
+    },
+    "TCS": {
+      "equity_key": "NSE_EQ|INE467B01029",
+      "futures_key": "NSE_FO|58399",
+      "futures_expiry": 1787682599000
+    },
+    "AMBUJACEM": {
+      "equity_key": "NSE_EQ|INE079A01024",
+      "futures_key": "NSE_FO|58102",
+      "futures_expiry": 1787682599000
+    },
+    "PGEL": {
+      "equity_key": "NSE_EQ|INE457L01029",
+      "futures_key": "NSE_FO|58346",
+      "futures_expiry": 1787682599000
+    },
+    "LICI": {
+      "equity_key": "NSE_EQ|INE0J1Y01017",
+      "futures_key": "NSE_FO|58290",
+      "futures_expiry": 1787682599000
+    },
+    "GODFRYPHLP": {
+      "equity_key": "NSE_EQ|INE260B01028",
+      "futures_key": "NSE_FO|58200",
+      "futures_expiry": 1787682599000
+    },
+    "CROMPTON": {
+      "equity_key": "NSE_EQ|INE299U01018",
+      "futures_key": "NSE_FO|58155",
+      "futures_expiry": 1787682599000
+    },
+    "HDFCBANK": {
+      "equity_key": "NSE_EQ|INE040A01034",
+      "futures_key": "NSE_FO|58216",
+      "futures_expiry": 1787682599000
+    },
+    "GVT&D": {
+      "equity_key": "NSE_EQ|INE200A01026",
+      "futures_key": "NSE_FO|58211",
+      "futures_expiry": 1787682599000
+    },
+    "AMBER": {
+      "equity_key": "NSE_EQ|INE371P01015",
+      "futures_key": "NSE_FO|58101",
+      "futures_expiry": 1787682599000
+    },
+    "PIIND": {
+      "equity_key": "NSE_EQ|INE603J01030",
+      "futures_key": "NSE_FO|58349",
+      "futures_expiry": 1787682599000
+    },
+    "IREDA": {
+      "equity_key": "NSE_EQ|INE202E01016",
+      "futures_key": "NSE_FO|58248",
+      "futures_expiry": 1787682599000
+    },
+    "NAUKRI": {
+      "equity_key": "NSE_EQ|INE663F01032",
+      "futures_key": "NSE_FO|58328",
+      "futures_expiry": 1787682599000
+    },
+    "EICHERMOT": {
+      "equity_key": "NSE_EQ|INE066A01021",
+      "futures_key": "NSE_FO|58181",
+      "futures_expiry": 1787682599000
+    },
+    "POWERGRID": {
+      "equity_key": "NSE_EQ|INE752E01010",
+      "futures_key": "NSE_FO|58357",
+      "futures_expiry": 1787682599000
+    },
+    "DLF": {
+      "equity_key": "NSE_EQ|INE271C01023",
+      "futures_key": "NSE_FO|58162",
+      "futures_expiry": 1787682599000
+    },
+    "PIDILITIND": {
+      "equity_key": "NSE_EQ|INE318A01026",
+      "futures_key": "NSE_FO|58348",
+      "futures_expiry": 1787682599000
+    },
+    "LAURUSLABS": {
+      "equity_key": "NSE_EQ|INE947Q01028",
+      "futures_key": "NSE_FO|58279",
+      "futures_expiry": 1787682599000
+    },
+    "BAJAJFINSV": {
+      "equity_key": "NSE_EQ|INE918I01026",
+      "futures_key": "NSE_FO|58119",
+      "futures_expiry": 1787682599000
+    },
+    "JIOFIN": {
+      "equity_key": "NSE_EQ|INE758E01017",
+      "futures_key": "NSE_FO|58256",
+      "futures_expiry": 1787682599000
+    },
+    "DRREDDY": {
+      "equity_key": "NSE_EQ|INE089A01031",
+      "futures_key": "NSE_FO|58170",
+      "futures_expiry": 1787682599000
+    },
+    "NHPC": {
+      "equity_key": "NSE_EQ|INE848E01016",
+      "futures_key": "NSE_FO|58331",
+      "futures_expiry": 1787682599000
+    },
+    "PAYTM": {
+      "equity_key": "NSE_EQ|INE982J01020",
+      "futures_key": "NSE_FO|58342",
+      "futures_expiry": 1787682599000
+    },
+    "PAGEIND": {
+      "equity_key": "NSE_EQ|INE761H01022",
+      "futures_key": "NSE_FO|58340",
+      "futures_expiry": 1787682599000
+    },
+    "FORCEMOT": {
+      "equity_key": "NSE_EQ|INE451A01017",
+      "futures_key": "NSE_FO|58184",
+      "futures_expiry": 1787682599000
+    },
+    "TVSMOTOR": {
+      "equity_key": "NSE_EQ|INE494B01023",
+      "futures_key": "NSE_FO|58406",
+      "futures_expiry": 1787682599000
+    },
+    "INDIGO": {
+      "equity_key": "NSE_EQ|INE646L01027",
+      "futures_key": "NSE_FO|58242",
+      "futures_expiry": 1787682599000
+    },
+    "HYUNDAI": {
+      "equity_key": "NSE_EQ|INE0V6F01027",
+      "futures_key": "NSE_FO|58229",
+      "futures_expiry": 1787682599000
+    },
+    "ZYDUSLIFE": {
+      "equity_key": "NSE_EQ|INE010B01027",
+      "futures_key": "NSE_FO|58421",
+      "futures_expiry": 1787682599000
+    },
+    "MANKIND": {
+      "equity_key": "NSE_EQ|INE634S01028",
+      "futures_key": "NSE_FO|58304",
+      "futures_expiry": 1787682599000
+    },
+    "BHARTIARTL": {
+      "equity_key": "NSE_EQ|INE397D01024",
+      "futures_key": "NSE_FO|58132",
+      "futures_expiry": 1787682599000
+    },
+    "DMART": {
+      "equity_key": "NSE_EQ|INE192R01011",
+      "futures_key": "NSE_FO|58163",
+      "futures_expiry": 1787682599000
+    },
+    "CIPLA": {
+      "equity_key": "NSE_EQ|INE059A01026",
+      "futures_key": "NSE_FO|58147",
+      "futures_expiry": 1787682599000
+    },
+    "ANGELONE": {
+      "equity_key": "NSE_EQ|INE732I01021",
+      "futures_key": "NSE_FO|58103",
+      "futures_expiry": 1787682599000
+    },
+    "KFINTECH": {
+      "equity_key": "NSE_EQ|INE138Y01010",
+      "futures_key": "NSE_FO|58276",
+      "futures_expiry": 1787682599000
+    },
+    "JUBLFOOD": {
+      "equity_key": "NSE_EQ|INE797F01020",
+      "futures_key": "NSE_FO|58260",
+      "futures_expiry": 1787682599000
+    },
+    "MFSL": {
+      "equity_key": "NSE_EQ|INE180A01020",
+      "futures_key": "NSE_FO|58317",
+      "futures_expiry": 1787682599000
+    },
+    "AUBANK": {
+      "equity_key": "NSE_EQ|INE949L01017",
+      "futures_key": "NSE_FO|58109",
+      "futures_expiry": 1787682599000
+    },
+    "OFSS": {
+      "equity_key": "NSE_EQ|INE881D01027",
+      "futures_key": "NSE_FO|58337",
+      "futures_expiry": 1787682599000
+    },
+    "HDFCLIFE": {
+      "equity_key": "NSE_EQ|INE795G01014",
+      "futures_key": "NSE_FO|58217",
+      "futures_expiry": 1787682599000
+    },
+    "TITAN": {
+      "equity_key": "NSE_EQ|INE280A01028",
+      "futures_key": "NSE_FO|58402",
+      "futures_expiry": 1787682599000
+    },
+    "CUMMINSIND": {
+      "equity_key": "NSE_EQ|INE298A01020",
+      "futures_key": "NSE_FO|58156",
+      "futures_expiry": 1787682599000
+    },
+    "TMPV": {
+      "equity_key": "NSE_EQ|INE155A01022",
+      "futures_key": "NSE_FO|58403",
+      "futures_expiry": 1787682599000
+    },
+    "OIL": {
+      "equity_key": "NSE_EQ|INE274J01014",
+      "futures_key": "NSE_FO|58338",
+      "futures_expiry": 1787682599000
+    },
+    "RADICO": {
+      "equity_key": "NSE_EQ|INE944F01028",
+      "futures_key": "NSE_FO|58367",
+      "futures_expiry": 1787682599000
+    },
+    "PNBHOUSING": {
+      "equity_key": "NSE_EQ|INE572E01012",
+      "futures_key": "NSE_FO|58351",
+      "futures_expiry": 1787682599000
+    },
+    "INDUSINDBK": {
+      "equity_key": "NSE_EQ|INE095A01012",
+      "futures_key": "NSE_FO|58243",
+      "futures_expiry": 1787682599000
+    },
+    "INDIANB": {
+      "equity_key": "NSE_EQ|INE562A01011",
+      "futures_key": "NSE_FO|58241",
+      "futures_expiry": 1787682599000
+    },
+    "SUPREMEIND": {
+      "equity_key": "NSE_EQ|INE195A01028",
+      "futures_key": "NSE_FO|58392",
+      "futures_expiry": 1787682599000
+    },
+    "BSE": {
+      "equity_key": "NSE_EQ|INE118H01025",
+      "futures_key": "NSE_FO|58141",
+      "futures_expiry": 1787682599000
+    },
+    "ADANIGREEN": {
+      "equity_key": "NSE_EQ|INE364U01010",
+      "futures_key": "NSE_FO|58089",
+      "futures_expiry": 1787682599000
+    },
+    "AXISBANK": {
+      "equity_key": "NSE_EQ|INE238A01034",
+      "futures_key": "NSE_FO|58117",
+      "futures_expiry": 1787682599000
+    },
+    "SUNPHARMA": {
+      "equity_key": "NSE_EQ|INE044A01036",
+      "futures_key": "NSE_FO|58391",
+      "futures_expiry": 1787682599000
+    },
+    "MOTILALOFS": {
+      "equity_key": "NSE_EQ|INE338I01027",
+      "futures_key": "NSE_FO|58320",
+      "futures_expiry": 1787682599000
+    },
+    "DIXON": {
+      "equity_key": "NSE_EQ|INE935N01020",
+      "futures_key": "NSE_FO|58161",
+      "futures_expiry": 1787682599000
+    },
+    "HINDALCO": {
+      "equity_key": "NSE_EQ|INE038A01020",
+      "futures_key": "NSE_FO|58225",
+      "futures_expiry": 1787682599000
+    },
+    "IOC": {
+      "equity_key": "NSE_EQ|INE242A01010",
+      "futures_key": "NSE_FO|58247",
+      "futures_expiry": 1787682599000
+    },
+    "UNIONBANK": {
+      "equity_key": "NSE_EQ|INE692A01016",
+      "futures_key": "NSE_FO|58408",
+      "futures_expiry": 1787682599000
+    },
+    "KPITTECH": {
+      "equity_key": "NSE_EQ|INE04I401011",
+      "futures_key": "NSE_FO|58278",
+      "futures_expiry": 1787682599000
+    },
+    "FORTIS": {
+      "equity_key": "NSE_EQ|INE061F01013",
+      "futures_key": "NSE_FO|58188",
+      "futures_expiry": 1787682599000
+    },
+    "BEL": {
+      "equity_key": "NSE_EQ|INE263A01024",
+      "futures_key": "NSE_FO|58130",
+      "futures_expiry": 1787682599000
+    },
+    "RECLTD": {
+      "equity_key": "NSE_EQ|INE020B01018",
+      "futures_key": "NSE_FO|58369",
+      "futures_expiry": 1787682599000
+    },
+    "TORNTPHARM": {
+      "equity_key": "NSE_EQ|INE685A01028",
+      "futures_key": "NSE_FO|58404",
+      "futures_expiry": 1787682599000
+    },
+    "SRF": {
+      "equity_key": "NSE_EQ|INE647A01010",
+      "futures_key": "NSE_FO|58390",
+      "futures_expiry": 1787682599000
+    },
+    "HCLTECH": {
+      "equity_key": "NSE_EQ|INE860A01027",
+      "futures_key": "NSE_FO|58214",
+      "futures_expiry": 1787682599000
+    },
+    "PREMIERENE": {
+      "equity_key": "NSE_EQ|INE0BS701011",
+      "futures_key": "NSE_FO|58359",
+      "futures_expiry": 1787682599000
+    },
+    "SWIGGY": {
+      "equity_key": "NSE_EQ|INE00H001014",
+      "futures_key": "NSE_FO|58394",
+      "futures_expiry": 1787682599000
+    },
+    "FEDERALBNK": {
+      "equity_key": "NSE_EQ|INE171A01029",
+      "futures_key": "NSE_FO|58183",
+      "futures_expiry": 1787682599000
+    },
+    "RBLBANK": {
+      "equity_key": "NSE_EQ|INE976G01028",
+      "futures_key": "NSE_FO|58368",
+      "futures_expiry": 1787682599000
+    },
+    "PERSISTENT": {
+      "equity_key": "NSE_EQ|INE262H01021",
+      "futures_key": "NSE_FO|58343",
+      "futures_expiry": 1787682599000
+    },
+    "BANKINDIA": {
+      "equity_key": "NSE_EQ|INE084A01016",
+      "futures_key": "NSE_FO|58125",
+      "futures_expiry": 1787682599000
+    },
+    "MOTHERSON": {
+      "equity_key": "NSE_EQ|INE775A01035",
+      "futures_key": "NSE_FO|58319",
+      "futures_expiry": 1787682599000
+    },
+    "KEI": {
+      "equity_key": "NSE_EQ|INE878B01027",
+      "futures_key": "NSE_FO|58275",
+      "futures_expiry": 1787682599000
+    },
+    "SBICARD": {
+      "equity_key": "NSE_EQ|INE018E01016",
+      "futures_key": "NSE_FO|58376",
+      "futures_expiry": 1787682599000
+    },
+    "GMRAIRPORT": {
+      "equity_key": "NSE_EQ|INE776C01039",
+      "futures_key": "NSE_FO|58199",
+      "futures_expiry": 1787682599000
+    },
+    "POLICYBZR": {
+      "equity_key": "NSE_EQ|INE417T01026",
+      "futures_key": "NSE_FO|58355",
+      "futures_expiry": 1787682599000
+    },
+    "RVNL": {
+      "equity_key": "NSE_EQ|INE415G01027",
+      "futures_key": "NSE_FO|58374",
+      "futures_expiry": 1787682599000
+    },
+    "BOSCHLTD": {
+      "equity_key": "NSE_EQ|INE323A01026",
+      "futures_key": "NSE_FO|58136",
+      "futures_expiry": 1787682599000
+    },
+    "LTM": {
+      "equity_key": "NSE_EQ|INE214T01019",
+      "futures_key": "NSE_FO|58298",
+      "futures_expiry": 1787682599000
+    },
+    "HAVELLS": {
+      "equity_key": "NSE_EQ|INE176B01034",
+      "futures_key": "NSE_FO|58213",
+      "futures_expiry": 1787682599000
+    },
+    "BANDHANBNK": {
+      "equity_key": "NSE_EQ|INE545U01014",
+      "futures_key": "NSE_FO|58122",
+      "futures_expiry": 1787682599000
+    },
+    "MAZDOCK": {
+      "equity_key": "NSE_EQ|INE249Z01020",
+      "futures_key": "NSE_FO|58310",
+      "futures_expiry": 1787682599000
+    },
+    "SOLARINDS": {
+      "equity_key": "NSE_EQ|INE343H01029",
+      "futures_key": "NSE_FO|58388",
+      "futures_expiry": 1787682599000
+    },
+    "ETERNAL": {
+      "equity_key": "NSE_EQ|INE758T01015",
+      "futures_key": "NSE_FO|58182",
+      "futures_expiry": 1787682599000
+    },
+    "ITC": {
+      "equity_key": "NSE_EQ|INE154A01025",
+      "futures_key": "NSE_FO|58250",
+      "futures_expiry": 1787682599000
+    },
+    "POLYCAB": {
+      "equity_key": "NSE_EQ|INE455K01017",
+      "futures_key": "NSE_FO|58356",
+      "futures_expiry": 1787682599000
+    },
+    "AUROPHARMA": {
+      "equity_key": "NSE_EQ|INE406A01037",
+      "futures_key": "NSE_FO|58116",
+      "futures_expiry": 1787682599000
+    },
+    "M&M": {
+      "equity_key": "NSE_EQ|INE101A01026",
+      "futures_key": "NSE_FO|58302",
+      "futures_expiry": 1787682599000
+    },
+    "ASHOKLEY": {
+      "equity_key": "NSE_EQ|INE208A01029",
+      "futures_key": "NSE_FO|58106",
+      "futures_expiry": 1787682599000
+    },
+    "KALYANKJIL": {
+      "equity_key": "NSE_EQ|INE303R01014",
+      "futures_key": "NSE_FO|58261",
+      "futures_expiry": 1787682599000
+    },
+    "DELHIVERY": {
+      "equity_key": "NSE_EQ|INE148O01028",
+      "futures_key": "NSE_FO|58159",
+      "futures_expiry": 1787682599000
+    },
+    "ICICIBANK": {
+      "equity_key": "NSE_EQ|INE090A01021",
+      "futures_key": "NSE_FO|58232",
+      "futures_expiry": 1787682599000
+    },
+    "BLUESTARCO": {
+      "equity_key": "NSE_EQ|INE472A01039",
+      "futures_key": "NSE_FO|58135",
+      "futures_expiry": 1787682599000
+    },
+    "UPL": {
+      "equity_key": "NSE_EQ|INE628A01036",
+      "futures_key": "NSE_FO|58413",
+      "futures_expiry": 1787682599000
+    },
+    "SUZLON": {
+      "equity_key": "NSE_EQ|INE040H01021",
+      "futures_key": "NSE_FO|58393",
+      "futures_expiry": 1787682599000
+    },
+    "LT": {
+      "equity_key": "NSE_EQ|INE018A01030",
+      "futures_key": "NSE_FO|58292",
+      "futures_expiry": 1787682599000
+    },
+    "IDFCFIRSTB": {
+      "equity_key": "NSE_EQ|INE092T01019",
+      "futures_key": "NSE_FO|58236",
+      "futures_expiry": 1787682599000
+    },
+    "PETRONET": {
+      "equity_key": "NSE_EQ|INE347G01014",
+      "futures_key": "NSE_FO|58344",
+      "futures_expiry": 1787682599000
+    },
+    "CGPOWER": {
+      "equity_key": "NSE_EQ|INE067A01029",
+      "futures_key": "NSE_FO|58145",
+      "futures_expiry": 1787682599000
+    },
+    "ADANIENT": {
+      "equity_key": "NSE_EQ|INE423A01024",
+      "futures_key": "NSE_FO|58088",
+      "futures_expiry": 1787682599000
+    },
+    "COLPAL": {
+      "equity_key": "NSE_EQ|INE259A01022",
+      "futures_key": "NSE_FO|58153",
+      "futures_expiry": 1787682599000
+    },
+    "POWERINDIA": {
+      "equity_key": "NSE_EQ|INE07Y701011",
+      "futures_key": "NSE_FO|58358",
+      "futures_expiry": 1787682599000
+    },
+    "ICICIGI": {
+      "equity_key": "NSE_EQ|INE765G01017",
+      "futures_key": "NSE_FO|58233",
+      "futures_expiry": 1787682599000
+    },
+    "BHEL": {
+      "equity_key": "NSE_EQ|INE257A01026",
+      "futures_key": "NSE_FO|58133",
+      "futures_expiry": 1787682599000
+    },
+    "GAIL": {
+      "equity_key": "NSE_EQ|INE129A01019",
+      "futures_key": "NSE_FO|58189",
+      "futures_expiry": 1787682599000
+    },
+    "ULTRACEMCO": {
+      "equity_key": "NSE_EQ|INE481G01011",
+      "futures_key": "NSE_FO|58407",
+      "futures_expiry": 1787682599000
+    },
+    "SAIL": {
+      "equity_key": "NSE_EQ|INE114A01011",
+      "futures_key": "NSE_FO|58375",
+      "futures_expiry": 1787682599000
+    },
+    "GLENMARK": {
+      "equity_key": "NSE_EQ|INE935A01035",
+      "futures_key": "NSE_FO|58198",
+      "futures_expiry": 1787682599000
+    },
+    "SIEMENS": {
+      "equity_key": "NSE_EQ|INE003A01024",
+      "futures_key": "NSE_FO|58387",
+      "futures_expiry": 1787682599000
+    },
+    "BPCL": {
+      "equity_key": "NSE_EQ|INE029A01011",
+      "futures_key": "NSE_FO|58138",
+      "futures_expiry": 1787682599000
+    },
+    "TATAELXSI": {
+      "equity_key": "NSE_EQ|INE670A01012",
+      "futures_key": "NSE_FO|58396",
+      "futures_expiry": 1787682599000
+    },
+    "VBL": {
+      "equity_key": "NSE_EQ|INE200M01039",
+      "futures_key": "NSE_FO|58414",
+      "futures_expiry": 1787682599000
+    },
+    "DABUR": {
+      "equity_key": "NSE_EQ|INE016A01026",
+      "futures_key": "NSE_FO|58157",
+      "futures_expiry": 1787682599000
+    }
+  }
+}
