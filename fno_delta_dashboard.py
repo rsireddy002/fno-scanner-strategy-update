@@ -67,6 +67,7 @@ DAILY_INTERVAL_VALUE = "1"
 DAILY_LOOKBACK_DAYS = 300
 SCORE_CACHE_PATH = "fno_scores_cache.json"
 SIGNAL_LOG_PATH = "fno_signal_log.json"
+PAPER_TRADE_LOG_PATH = "fno_paper_trades.json"
 INSTRUMENT_SEARCH_URL = "https://api.upstox.com/v2/instruments/search"
 QUOTES_URL = "https://api.upstox.com/v2/market-quote/quotes"
 BATCH_SIZE = 480
@@ -289,6 +290,29 @@ def find_swing_points(df, pivot_window=12):
     return sorted(set(swing_lows)), sorted(set(swing_highs))
 
 
+def compute_atr(df, period=14):
+    """Average True Range on the 5-min bars already being fetched for this
+    dashboard - measures typical bar-to-bar volatility, used to size the
+    Target distance for a given symbol instead of a fixed % or a nearby
+    swing point (both of which can be arbitrarily too tight or too wide
+    relative to how much this particular stock actually moves).
+    True Range = max(high-low, |high-prev_close|, |low-prev_close|).
+    Returns the latest ATR value (in price units, not %), or None if there
+    isn't enough history yet."""
+    if len(df) < period + 1:
+        return None
+    high, low, close = df["high"], df["low"], df["close"]
+    prev_close = close.shift(1)
+    tr = pd.concat([
+        high - low,
+        (high - prev_close).abs(),
+        (low - prev_close).abs(),
+    ], axis=1).max(axis=1)
+    atr_series = tr.rolling(period).mean()
+    latest = atr_series.iloc[-1]
+    return None if pd.isna(latest) else round(latest, 2)
+
+
 def compute_levels_and_baseline(df):
     df = df.copy()
     df["volumeDelta"] = (df["close"] - df["open"]) * df["volume"]
@@ -404,6 +428,7 @@ def compute_levels_and_baseline(df):
         rvol_baseline = {t: sum(v) / len(v) for t, v in rvol_baseline.items()}
 
     swing_lows, swing_highs = find_swing_points(df)
+    atr_val = compute_atr(df, period=14)
 
     # Rolling buffer of recent 5-min closes, used to power the Intraday
     # Composite Score (MA20 + RSI + Volume, all on 5-min bars) so that
@@ -431,6 +456,7 @@ def compute_levels_and_baseline(df):
         "swing_highs": swing_highs,
         "computed_date": str(today),
         "intraday_closes": intraday_closes,
+        "atr": atr_val,
     }
 
 
@@ -833,6 +859,132 @@ def append_to_signal_log(log, category, df, detail_col):
     return log
 
 
+# ---------------- Paper Trade Log ----------------
+#
+# Persists every Signals-tab idea to disk the moment it first appears, and
+# tracks its outcome (target hit / stop hit / still open) on every
+# subsequent refresh - so opening this dashboard from your phone at, say,
+# 2 PM still shows everything that fired since market open at 9:15, not
+# just whatever's live at that exact moment. Resets automatically at the
+# start of each new trading day (same _date-keyed pattern as the Signal
+# Log above).
+#
+# IMPORTANT: this only captures what happens while the app is actually
+# running and refreshing - Streamlit doesn't execute code in the
+# background on its own. For this to genuinely cover "since market open"
+# regardless of when you check your phone, leave a tab open somewhere
+# (PC or Streamlit Cloud) with Auto-refresh turned ON for the whole
+# session, so a scan actually happens every ~30-60s all day. Opening the
+# app fresh at 2 PM with auto-refresh OFF the whole morning will only
+# have logged whatever happened to be live during actual refreshes.
+
+def load_paper_trade_log():
+    today_str = now_ist().strftime("%Y-%m-%d")
+    if os.path.exists(PAPER_TRADE_LOG_PATH):
+        with open(PAPER_TRADE_LOG_PATH) as f:
+            log = json.load(f)
+        if log.get("_date") == today_str:
+            return log
+    return {"_date": today_str, "trades": []}
+
+
+def save_paper_trade_log(log):
+    with open(PAPER_TRADE_LOG_PATH, "w") as f:
+        json.dump(log, f, indent=2)
+
+
+def log_new_paper_trades(log, signals_df):
+    """Append any signal not already logged today, deduped by
+    (symbol, action, entry_time) - so the SAME fresh signal seen across
+    consecutive refreshes (before its underlying status changes) isn't
+    logged twice, but a genuinely new entry later in the day is."""
+    existing_keys = {(t["symbol"], t["action"], t["entry_time"]) for t in log["trades"]}
+    for _, row in signals_df.iterrows():
+        key = (row["Symbol"], row["Action"], row["Time"])
+        if key in existing_keys:
+            continue
+        log["trades"].append({
+            "symbol": row["Symbol"],
+            "action": row["Action"],
+            "entry_time": row["Time"],
+            "entry_price": row["Price"],
+            "stop_loss": row["StopLoss"],
+            "target": row["Target"],
+            "reward_risk": row.get("RewardRisk"),
+            "target_source": row.get("TargetSource"),
+            "confidence": row["Confidence"],
+            "rvol_at_entry": row.get("RVOL%"),
+            "why": row.get("Why"),
+            "status": "OPEN",
+            "exit_price": None,
+            "exit_time": None,
+            "logged_at": now_ist().strftime("%H:%M"),
+        })
+        existing_keys.add(key)
+    return log
+
+
+def update_paper_trade_statuses(log, result_df):
+    """Mark-to-market every still-OPEN paper trade against the latest live
+    price: closes it out the moment price actually reaches the recorded
+    target or stop, using the CURRENT scan's price - not a live tick
+    stream, so an intra-refresh spike through a level between scans won't
+    be caught until the next refresh picks it up."""
+    price_lookup = result_df.set_index("Symbol")["CurrentPrice"].to_dict()
+    now_time_str = now_ist().strftime("%H:%M")
+    for t in log["trades"]:
+        if t["status"] != "OPEN":
+            continue
+        ltp = price_lookup.get(t["symbol"])
+        if ltp is None or pd.isna(ltp):
+            continue
+        if t["action"] == "BUY":
+            if ltp >= t["target"]:
+                t["status"], t["exit_price"], t["exit_time"] = "TARGET HIT", ltp, now_time_str
+            elif ltp <= t["stop_loss"]:
+                t["status"], t["exit_price"], t["exit_time"] = "STOP HIT", ltp, now_time_str
+        else:  # SELL
+            if ltp <= t["target"]:
+                t["status"], t["exit_price"], t["exit_time"] = "TARGET HIT", ltp, now_time_str
+            elif ltp >= t["stop_loss"]:
+                t["status"], t["exit_price"], t["exit_time"] = "STOP HIT", ltp, now_time_str
+    return log
+
+
+def build_paper_trade_df(log, result_df):
+    """Render the log into a display-ready DataFrame, with live mark-to-
+    market P&L% for OPEN trades (using current price) and locked-in P&L%
+    for closed ones (using the recorded exit price)."""
+    if not log["trades"]:
+        return pd.DataFrame()
+    price_lookup = result_df.set_index("Symbol")["CurrentPrice"].to_dict()
+    rows = []
+    for t in log["trades"]:
+        if t["status"] == "OPEN":
+            mark_price = price_lookup.get(t["symbol"])
+        else:
+            mark_price = t["exit_price"]
+        pnl_pct = None
+        if mark_price is not None and pd.notna(mark_price):
+            if t["action"] == "BUY":
+                pnl_pct = round((mark_price - t["entry_price"]) / t["entry_price"] * 100, 2)
+            else:
+                pnl_pct = round((t["entry_price"] - mark_price) / t["entry_price"] * 100, 2)
+        rows.append({
+            "Symbol": t["symbol"], "Action": t["action"], "EntryTime": t["entry_time"],
+            "EntryPrice": t["entry_price"], "StopLoss": t["stop_loss"], "Target": t["target"],
+            "TargetSource": t.get("target_source"),
+            "RewardRisk": t.get("reward_risk"), "Confidence": t["confidence"],
+            "RVOL@Entry": t.get("rvol_at_entry"), "Status": t["status"],
+            "ExitPrice": t["exit_price"], "ExitTime": t["exit_time"],
+            "PnL%": pnl_pct, "Why": t.get("why"),
+        })
+    df = pd.DataFrame(rows)
+    df = df.sort_values("EntryTime").reset_index(drop=True)
+    df.insert(0, "S.No", range(1, len(df) + 1))
+    return df
+
+
 def run_live_scan(cache, state, token, max_zone_width_pct=1.5,
                    vwap_above_support_max_pct=0.5, vwap_resistance_room_min_pct=1.0,
                    vwap_resistance_room_max_pct=2.0):
@@ -1084,6 +1236,7 @@ def run_live_scan(cache, state, token, max_zone_width_pct=1.5,
             "IntradayRSIScore": intraday_score["rsi_score"] if intraday_score else None,
             "IntradayVolScore": intraday_score["vol_score"] if intraday_score else None,
             "IntradayFinalScore": intraday_score["final_score"] if intraday_score else None,
+            "ATR": levels.get("atr"),
             "IsIndex": levels.get("is_index", False),
         })
 
@@ -1140,6 +1293,20 @@ with st.sidebar:
         "Max Zone Width % (flag entries wider than this)", 0.5, 5.0, 1.5, 0.1,
         help="If the gap between Delta Support and Delta Resistance exceeds this % of price, "
              "fresh crossover signals get flagged '(wide zone - caution)' instead of treated as clean entries."
+    )
+    atr_target_multiple = st.slider(
+        "Target = ATR × this multiple (Trade Ideas / Signals)", 0.5, 4.0, 1.5, 0.1,
+        help="Target is set at Entry Price ± (14-period ATR on 5-min bars) × this multiple, so it scales "
+             "with how much THIS stock actually moves rather than a fixed % or the nearest swing point "
+             "(which could be too close on a quiet stock, or too far on a volatile one). "
+             "Falls back to the Reward:Risk-based projection below if ATR isn't available yet (e.g. "
+             "cache built before this feature existed - re-run Precompute)."
+    )
+    min_reward_risk_ratio = st.slider(
+        "Min Reward:Risk Ratio (safety-net filter)", 0.5, 3.0, 1.0, 0.1,
+        help="Even with an ATR-based target, this still acts as a floor: if the ATR-projected target ends up "
+             "less than this many times the StopLoss distance, the trade idea is dropped entirely. Also used "
+             "directly as the projection multiple on the rare fallback path when ATR isn't available."
     )
     with st.expander("VWAP Reclaim Setup thresholds"):
         vwap_above_support_max_pct = st.slider(
@@ -1487,9 +1654,17 @@ if not log_df.empty:
 # for a BUY, Target must be genuinely above Price and StopLoss genuinely
 # below (and vice versa for SELL) - a broken fallback level (e.g. from an
 # inverted zone) that would put Target on the wrong side gets excluded
-# rather than shown with a nonsensical number. A minimum distance also
-# filters out setups with negligible reward or a stop so tight it offers
-# no real room.
+# rather than shown with a nonsensical number. Target is set from ATR (14-
+# period, 5-min bars) x the sidebar's ATR multiple - scaling with how much
+# THIS stock actually moves - rather than pulled from the nearest swing
+# point (NextSupport/NextResistance), which could sit arbitrarily close to
+# price on quiet stocks and produce razor-thin, cost-eating targets even
+# when the old Reward:Risk-only check looked fine on paper. If ATR isn't
+# cached yet for a symbol (re-run Precompute to populate it), falls back to
+# projecting the target from the stop-loss distance x Min Reward:Risk Ratio.
+# Either way, the Min Reward:Risk Ratio slider still acts as a final floor -
+# an ATR-based target that ends up too small relative to its own stop gets
+# dropped rather than shown.
 BUY_STATUSES = ["CROSSED UP", "CROSSING SUPPORT FROM BELOW", "CROSSED ABOVE VWAP FROM BELOW"]
 SELL_STATUSES = ["CROSSED BELOW", "CROSSING RESISTANCE FROM ABOVE", "CROSSED BELOW VWAP FROM ABOVE"]
 MIN_TARGET_DISTANCE_PCT = 0.1
@@ -1501,39 +1676,53 @@ for _, row in result_df.iterrows():
     price = row["EntryPrice"]
     if pd.isna(price):
         continue
+    atr = row.get("ATR")
+    has_atr = pd.notna(atr) and atr > 0
 
     if s in BUY_STATUSES:
         stop_loss = row["DeltaSupport"]
-        target = row["NextResistance"] if pd.notna(row["NextResistance"]) else row["DeltaResistance"]
-        if pd.isna(stop_loss) or pd.isna(target):
+        if pd.isna(stop_loss) or stop_loss >= price:
             continue
-        if not (stop_loss < price < target):
+        risk_pct = (price - stop_loss) / price * 100
+        if risk_pct < MIN_STOPLOSS_DISTANCE_PCT:
             continue
-        if (target - price) / price * 100 < MIN_TARGET_DISTANCE_PCT:
+        target = (price + atr * atr_target_multiple) if has_atr \
+            else price + (price - stop_loss) * min_reward_risk_ratio
+        reward_pct = (target - price) / price * 100
+        if reward_pct < MIN_TARGET_DISTANCE_PCT:
             continue
-        if (price - stop_loss) / price * 100 < MIN_STOPLOSS_DISTANCE_PCT:
+        if reward_pct / risk_pct < min_reward_risk_ratio:
             continue
         trade_rows.append({
             "Symbol": row["Symbol"], "Action": "BUY", "Price": price,
             "LTP": row["CurrentPrice"],
-            "StopLoss": stop_loss, "Target": target, "RVOL%": row["RVOL%"],
+            "StopLoss": stop_loss, "Target": round(target, 2),
+            "RewardRisk": round(reward_pct / risk_pct, 2),
+            "TargetSource": "ATR" if has_atr else "Ratio (ATR unavailable)",
+            "RVOL%": row["RVOL%"],
             "Time": row["SignalTime"],
         })
     elif s in SELL_STATUSES:
         stop_loss = row["DeltaResistance"]
-        target = row["NextSupport"] if pd.notna(row["NextSupport"]) else row["DeltaSupport"]
-        if pd.isna(stop_loss) or pd.isna(target):
+        if pd.isna(stop_loss) or stop_loss <= price:
             continue
-        if not (target < price < stop_loss):
+        risk_pct = (stop_loss - price) / price * 100
+        if risk_pct < MIN_STOPLOSS_DISTANCE_PCT:
             continue
-        if (price - target) / price * 100 < MIN_TARGET_DISTANCE_PCT:
+        target = (price - atr * atr_target_multiple) if has_atr \
+            else price - (stop_loss - price) * min_reward_risk_ratio
+        reward_pct = (price - target) / price * 100
+        if reward_pct < MIN_TARGET_DISTANCE_PCT:
             continue
-        if (stop_loss - price) / price * 100 < MIN_STOPLOSS_DISTANCE_PCT:
+        if reward_pct / risk_pct < min_reward_risk_ratio:
             continue
         trade_rows.append({
             "Symbol": row["Symbol"], "Action": "SELL", "Price": price,
             "LTP": row["CurrentPrice"],
-            "StopLoss": stop_loss, "Target": target, "RVOL%": row["RVOL%"],
+            "StopLoss": stop_loss, "Target": round(target, 2),
+            "RewardRisk": round(reward_pct / risk_pct, 2),
+            "TargetSource": "ATR" if has_atr else "Ratio (ATR unavailable)",
+            "RVOL%": row["RVOL%"],
             "Time": row["SignalTime"],
         })
 
@@ -1626,7 +1815,19 @@ if not trade_df.empty:
     ).drop(columns="_pin").reset_index(drop=True)
     signals_df.insert(0, "S.No", range(1, len(signals_df) + 1))
     signals_df = signals_df[["S.No", "Symbol", "Action", "Confidence", "Price", "LTP",
-                              "StopLoss", "Target", "RVOL%", "Time", "Why"]]
+                              "StopLoss", "Target", "TargetSource", "RewardRisk", "RVOL%", "Time", "Why"]]
+
+# Paper Trade Log - persist every Signals-tab idea the moment it first
+# appears, and mark-to-market/close out existing OPEN entries against the
+# latest scan. Runs every refresh (regardless of which tab you're looking
+# at) so the log accumulates across the whole day, not just when you
+# happen to be on this tab.
+paper_trade_log = load_paper_trade_log()
+if not signals_df.empty:
+    paper_trade_log = log_new_paper_trades(paper_trade_log, signals_df)
+paper_trade_log = update_paper_trade_statuses(paper_trade_log, result_df)
+save_paper_trade_log(paper_trade_log)
+paper_trade_df = build_paper_trade_df(paper_trade_log, result_df)
 
 
 def highlight_signal_action(row):
@@ -1637,11 +1838,11 @@ def highlight_signal_action(row):
     return [""] * len(row)
 
 
-tabSig, tabTom, tabScore, tabIS, tabX, tabI, tabT, tabW, tabL, tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tabSR = st.tabs(
-    ["🎯 Signals", "Tomorrow's Watchlist", "Composite Score", "Intraday Score", "Trade Ideas", "NIFTY & BankNifty",
-     "Tight Zone + Room", "Wide Zone Single-Level", "Signal Log (Today)", "Simple View", "Sector Movers",
-     "Bullish (Up)", "Bearish (Down)", "Sector Overview", "VWAP Setups", "All Intraday", "Full Scan",
-     "Sector Rotation"]
+tabSig, tabPT, tabTom, tabScore, tabIS, tabX, tabI, tabT, tabW, tabL, tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tabSR = st.tabs(
+    ["🎯 Signals", "📒 Paper Trades", "Tomorrow's Watchlist", "Composite Score", "Intraday Score", "Trade Ideas",
+     "NIFTY & BankNifty", "Tight Zone + Room", "Wide Zone Single-Level", "Signal Log (Today)", "Simple View",
+     "Sector Movers", "Bullish (Up)", "Bearish (Down)", "Sector Overview", "VWAP Setups", "All Intraday",
+     "Full Scan", "Sector Rotation"]
 )
 
 with tabSig:
@@ -1662,6 +1863,53 @@ with tabSig:
         )
         csv_signals = signals_df.to_csv(index=False).encode("utf-8")
         st.download_button("Download signals CSV", csv_signals, "fno_signals.csv", "text/csv")
+
+with tabPT:
+    st.caption(
+        "Every Signals-tab idea gets logged here the moment it first appears - permanently, for the rest "
+        "of the trading day - so opening this on your phone hours later still shows everything that fired "
+        "since market open, not just what's live right now. OPEN trades are marked-to-market against the "
+        "live price on every refresh; TARGET HIT / STOP HIT lock in once price actually reaches that level. "
+        "Resets automatically at the start of each new trading day. "
+        "NOTE: this only captures activity while the app is actually refreshing - leave Auto-refresh ON "
+        "(sidebar) in a tab all day for this to genuinely cover the full session."
+    )
+    if paper_trade_df.empty:
+        st.write("No paper trades logged yet today.")
+    else:
+        total = len(paper_trade_df)
+        open_ct = (paper_trade_df["Status"] == "OPEN").sum()
+        target_ct = (paper_trade_df["Status"] == "TARGET HIT").sum()
+        stop_ct = (paper_trade_df["Status"] == "STOP HIT").sum()
+        closed_ct = target_ct + stop_ct
+        win_rate = round((target_ct / closed_ct) * 100, 1) if closed_ct > 0 else None
+        avg_pnl = round(paper_trade_df["PnL%"].mean(), 2) if paper_trade_df["PnL%"].notna().any() else None
+
+        m1, m2, m3, m4, m5, m6 = st.columns(6)
+        m1.metric("Total Trades", total)
+        m2.metric("Open", int(open_ct))
+        m3.metric("Target Hit", int(target_ct))
+        m4.metric("Stop Hit", int(stop_ct))
+        m5.metric("Win Rate", f"{win_rate}%" if win_rate is not None else "-")
+        m6.metric("Avg P&L%", f"{avg_pnl:+.2f}%" if avg_pnl is not None else "-")
+
+        def highlight_paper_status(row):
+            status = row["Status"]
+            if status == "TARGET HIT":
+                return ["background-color: #d4f7d4; color: black"] * len(row)
+            elif status == "STOP HIT":
+                return ["background-color: #f7d4d4; color: black"] * len(row)
+            elif status == "OPEN":
+                return ["background-color: #eaf5ff; color: black"] * len(row)
+            return [""] * len(row)
+
+        st.dataframe(
+            paper_trade_df.style.apply(highlight_paper_status, axis=1),
+            use_container_width=True,
+            hide_index=True,
+        )
+        csv_paper = paper_trade_df.to_csv(index=False).encode("utf-8")
+        st.download_button("Download paper trade log CSV", csv_paper, "fno_paper_trades.csv", "text/csv")
 
 
 with tabTom:
@@ -1715,9 +1963,11 @@ with tabIS:
 with tabX:
     st.caption("BUY = fresh bullish event (crossed up, support reclaim, or VWAP reclaim). SELL = fresh bearish event. "
                "Price = entry price AT THE MOMENT the signal fired. LTP = current live price, for tracking how far "
-               "it's moved since entry. StopLoss/Target are validated against the entry price for directional sanity - "
-               "Target must be genuinely favorable and StopLoss genuinely unfavorable, each by at least 0.1%, or the "
-               "row is excluded. Time = when the underlying signal actually fired.")
+               "it's moved since entry. StopLoss = the broken Delta Support/Resistance level. Target is PROJECTED "
+               "from the StopLoss distance × the sidebar's Min Reward:Risk Ratio - not pulled from the nearest swing "
+               "point, which could sit arbitrarily close to price and produce a razor-thin target on quiet stocks. "
+               "RewardRisk = Target distance ÷ StopLoss distance (matches the sidebar ratio by construction). "
+               "Time = when the underlying signal actually fired.")
     if trade_df.empty:
         st.write("No fresh trade ideas right now.")
     else:
