@@ -210,6 +210,18 @@ SECTOR_MAP = {
 }
 
 
+def _nearest_hvn_levels(levels, price):
+    """Returns (nearest_hvn_above, nearest_hvn_below) given a cache entry's
+    levels dict and a reference price. Pools today_hvn + composite_hvn
+    together, same approach as live_strategy.py's SymbolState helpers."""
+    if price is None:
+        return None, None
+    pool = (levels.get("today_hvn") or []) + (levels.get("composite_hvn") or [])
+    above = [n["price"] for n in pool if n["price"] > price]
+    below = [n["price"] for n in pool if n["price"] < price]
+    return (min(above) if above else None), (max(below) if below else None)
+
+
 def get_sector(symbol):
     return SECTOR_MAP.get(symbol, "Other")
 
@@ -1249,6 +1261,7 @@ def run_live_scan(cache, state, token, max_zone_width_pct=1.5,
                                 "CROSSED ABOVE VWAP FROM BELOW", "CROSSED BELOW VWAP FROM ABOVE"):
             signal_time = now_time_str
 
+        nearest_hvn_above, nearest_hvn_below = _nearest_hvn_levels(levels, current_price)
         results.append({
             "Symbol": symbol, "Sector": get_sector(symbol), "CurrentPrice": current_price,
             "EntryPrice": entry_price if entry_price is not None else current_price,
@@ -1257,6 +1270,8 @@ def run_live_scan(cache, state, token, max_zone_width_pct=1.5,
             "NextSupport": next_support, "NextResistance": next_resistance,
             "NextLevelDistance%": next_level_distance_pct,
             "ZoneWidth%": zone_width_pct,
+            "NearestHVNAbove": nearest_hvn_above,
+            "NearestHVNBelow": nearest_hvn_below,
             "%Move": (
                 round(((current_price - resistance) / resistance) * 100, 2) if is_above_both
                 else round(((support - current_price) / support) * 100, 2) if is_below_both
