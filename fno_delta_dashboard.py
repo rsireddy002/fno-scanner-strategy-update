@@ -30,6 +30,7 @@ import streamlit as st
 
 from sector_rotation import render_sector_rotation_tab
 from sector_rotation import render_sector_rotation_tab
+from hvn_lvn import build_volume_profile, find_hvn_lvn
 # Streamlit Cloud servers run in UTC, not IST - use an explicit fixed IST
 # offset for all "current time" logic so RVOL matching and crossover
 # timestamps are correct regardless of server timezone.
@@ -437,6 +438,35 @@ def compute_levels_and_baseline(df):
     # even after the live scan appends the current tick as an extra bar.
     intraday_closes = df.tail(220)["close"].round(2).tolist()
 
+    # HVN/LVN: bin size derived from a FIXED TARGET BIN COUNT across each
+    # window's own price range, not a fixed point value or ATR fraction.
+    # ATR-based sizing broke down on stocks whose ATR is small relative to
+    # their multi-day range (RELIANCE composite came back with 13 "HVNs"
+    # crammed into a 21-point range - noise, not real nodes). A fixed bin
+    # COUNT keeps node granularity consistent regardless of instrument price
+    # level or ATR quirks.
+    TODAY_N_BINS = 30
+    COMPOSITE_N_BINS = 50
+    MIN_NODE_SEPARATION_BINS = 3
+
+    today_range = today_df["high"].max() - today_df["low"].min()
+    today_bin_size = max(today_range / TODAY_N_BINS, 0.01) if today_range > 0 else 0.01
+
+    composite_range = df["high"].max() - df["low"].min()
+    composite_bin_size = max(composite_range / COMPOSITE_N_BINS, 0.01) if composite_range > 0 else 0.01
+
+    try:
+        today_bins, today_vols = build_volume_profile(today_df, bin_size=today_bin_size)
+        today_hvn_lvn = find_hvn_lvn(today_bins, today_vols, min_bin_distance=MIN_NODE_SEPARATION_BINS)
+    except Exception:
+        today_hvn_lvn = {"hvns": [], "lvns": []}
+
+    try:
+        composite_bins, composite_vols = build_volume_profile(df, bin_size=composite_bin_size)
+        composite_hvn_lvn = find_hvn_lvn(composite_bins, composite_vols, min_bin_distance=MIN_NODE_SEPARATION_BINS)
+    except Exception:
+        composite_hvn_lvn = {"hvns": [], "lvns": []}
+
     return {
         "poc": None if pd.isna(todayPOC) else round(todayPOC, 2),
         "delta_support": None if pd.isna(support_before_today) else round(support_before_today, 2),
@@ -457,6 +487,10 @@ def compute_levels_and_baseline(df):
         "computed_date": str(today),
         "intraday_closes": intraday_closes,
         "atr": atr_val,
+        "today_hvn": today_hvn_lvn["hvns"],
+        "today_lvn": today_hvn_lvn["lvns"],
+        "composite_hvn": composite_hvn_lvn["hvns"],
+        "composite_lvn": composite_hvn_lvn["lvns"],
     }
 
 

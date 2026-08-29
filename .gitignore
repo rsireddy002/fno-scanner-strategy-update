@@ -23,3 +23,10 @@ venv/
 
 # Streamlit
 .streamlit/secrets.toml
+
+upstox_token.txt
+
+fno_paper_trades.json
+fno_scores_cache.json
+fno_signal_log.json
+rvol_atr_baseline.json
